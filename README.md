@@ -14,4 +14,4 @@ git push -u origin main
 
 
 stopinspb@yandex.ru
-http://huldra.ru 
+https://huldra.ru/?p=24827
