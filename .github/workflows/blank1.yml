@@ -10,6 +10,12 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  actions: read
+  contents: read
+
+
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     # Опционально: можно добавить параметры (входные данные)
@@ -50,7 +56,7 @@ jobs:
         continue-on-error: true    # Если артефакта еще нет (первый запуск)
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: blank1.yml       # точное имя файла этого workflow
+          workflow: ${{ github.workflow }} # имя файла этого workflow
           name: deployment-log       # Имя скачиваемого артефакта
           path: .                    # Скачиваем в текущую папку
  
