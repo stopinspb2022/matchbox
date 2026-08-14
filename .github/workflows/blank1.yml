@@ -22,7 +22,13 @@ on:
         options:
           - staging
           - production
-
+       # ДОБАВЛЕНО: Кнопка-галочка для полной очистки лога
+      clear_log:
+        description: 'Очистить историю лога перед запуском?'
+        required: false
+        default: false
+        type: boolean
+        
 permissions:
   actions: read
   contents: read
