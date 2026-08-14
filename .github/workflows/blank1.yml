@@ -45,6 +45,8 @@ jobs:
           echo второй скрипт
       - name: show summary
         run: |
+          export TZ="Europe/Moscow"
+          CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
           echo "скрипт удачно запущен!" >> $GITHUB_STEP_SUMMARY
           echo "14 августа 2026 года" >> $GITHUB_STEP_SUMMARY
           echo "Время запуска (UTC): **$CURRENT_TIME**" >> $GITHUB_STEP_SUMMARY
