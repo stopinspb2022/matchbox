@@ -43,6 +43,17 @@ jobs:
       - name: Run a multi-line script
         run: |
           echo второй скрипт
+          
+      # Пытаемся скачать лог из самого последнего успешного запуска
+      - name: Download previous artifact
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: blank1.yml         # точное имя файла этого workflow )
+          name: deployment-log       # Имя скачиваемого артефакта
+          path: .                    # Скачиваем в текущую папку
+          if_error_continue: true    # Если это самый первый запуск и артефакта еще нет — не прерывать сборку
+ 
       - name: show summary
         run: |
           export TZ="Europe/Moscow"
@@ -59,5 +70,5 @@ jobs:
         with:
           name: deployment-log  # Имя скачиваемого архива на GitHub
           path: log.txt         # Путь к файлу, который мы сохраняем
-          
+          overwrite: true
 
