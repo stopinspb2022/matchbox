@@ -10,12 +10,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-permissions:
-  actions: read
-  contents: read
-
-
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     # Опционально: можно добавить параметры (входные данные)
@@ -29,6 +23,12 @@ permissions:
           - staging
           - production
 
+
+
+permissions:
+  actions: read
+  contents: read
+  
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
