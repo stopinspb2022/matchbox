@@ -1,0 +1,93 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    # Опционально: можно добавить параметры (входные данные)
+    inputs:
+      environment:
+        description: 'Проверяем все'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+       # ДОБАВЛЕНО: Кнопка-галочка для полной очистки лога
+      clear_log:
+        description: 'Убить историю лога перед запуском?'
+        required: false
+        default: false
+        type: boolean
+        
+permissions:
+  actions: read
+  contents: read
+  
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello G N!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo второй скрипт
+      
+      # Пытаемся восстановить файл лога из официального кэша GitHub
+      # Исправлено: restore-keys теперь ищет по префиксу последний измененный кэш
+      - name: Restore log from cache
+        uses: actions/cache/restore@v4
+        with:
+          path: log.txt
+          key: deployment-history-log-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            deployment-history-log-
+ 
+      - name: show summary
+        run: |
+          export TZ="Europe/Moscow"
+          CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+          echo "скрипт удачно запущен!" >> $GITHUB_STEP_SUMMARY
+          echo "14 августа 2026 года" >> $GITHUB_STEP_SUMMARY
+          echo "Время запуска (MSK): **$CURRENT_TIME**" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          
+          # Запись выполненного окружения и времени в конец файла
+          echo "Запуск на окружении ${{ github.event.inputs.environment }} выполнен в: $CURRENT_TIME" >> log.txt
+
+      # 2. Перезаписываем обновленный файл лога в кэш для следующих запусков
+      - name: Save updated log to cache
+        uses: actions/cache/save@v4
+        if: always() # Сохраняем кэш даже если предыдущие шаги упали
+        with:
+          path: log.txt
+          key: deployment-history-log-${{ github.run_id }}-${{ github.run_attempt }}
+
+      # 3. Дополнительно прикрепляем файл как артефакт, чтобы его можно было скачать руками со страницы запуска
+      - name: Upload artifact log
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-log
+          path: log.txt
+          overwrite: true
