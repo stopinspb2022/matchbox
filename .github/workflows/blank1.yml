@@ -15,7 +15,7 @@ on:
     # Опционально: можно добавить параметры (входные данные)
     inputs:
       environment:
-        description: 'Environment 2026 to run'
+        description: 'Environment AUG 2026 to run'
         required: true
         default: 'staging'
         type: choice
