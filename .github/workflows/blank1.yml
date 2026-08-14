@@ -46,4 +46,5 @@ jobs:
       - name: show summary
         run: |
           echo "скрипт удачно запущен!" >> $GITHUB_STEP_SUMMARY
+          echo "14 августа 2026 года" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
