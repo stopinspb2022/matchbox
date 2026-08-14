@@ -47,12 +47,13 @@ jobs:
       # Пытаемся скачать лог из самого последнего успешного запуска
       - name: Download previous artifact
         uses: dawidd6/action-download-artifact@v9
+        continue-on-error: true    # Если артефакта еще нет (первый запуск)
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: blank1.yml         # точное имя файла этого workflow )
+          workflow: blank1.yml       # точное имя файла этого workflow )
           name: deployment-log       # Имя скачиваемого артефакта
           path: .                    # Скачиваем в текущую папку
-          if_error_continue: true    # Если это самый первый запуск и артефакта еще нет — не прерывать сборку
+ 
  
       - name: show summary
         run: |
@@ -60,7 +61,7 @@ jobs:
           CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
           echo "скрипт удачно запущен!" >> $GITHUB_STEP_SUMMARY
           echo "14 августа 2026 года" >> $GITHUB_STEP_SUMMARY
-          echo "Время запуска (UTC): **$CURRENT_TIME**" >> $GITHUB_STEP_SUMMARY
+          echo "Время запуска (MSK): **$CURRENT_TIME**" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
           echo "Запуск выполнен в: $CURRENT_TIME" >> log.txt
           
