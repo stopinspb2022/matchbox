@@ -51,3 +51,13 @@ jobs:
           echo "14 августа 2026 года" >> $GITHUB_STEP_SUMMARY
           echo "Время запуска (UTC): **$CURRENT_TIME**" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "Запуск выполнен в: $CURRENT_TIME" >> log.txt
+          
+      # Загрузка файла log.txt в качестве артефакта GitHub Actions
+      - name: Upload artifact log
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-log  # Имя скачиваемого архива на GitHub
+          path: log.txt         # Путь к файлу, который мы сохраняем
+          
+
