@@ -23,8 +23,6 @@ on:
           - staging
           - production
 
-
-
 permissions:
   actions: read
   contents: read
@@ -49,17 +47,16 @@ jobs:
       - name: Run a multi-line script
         run: |
           echo второй скрипт
-          
-      # Пытаемся скачать лог из самого последнего успешного запуска
-      - name: Download previous artifact
-        uses: dawidd6/action-download-artifact@v9
-        continue-on-error: true    # Если артефакта еще нет (первый запуск)
+      
+      # Пытаемся восстановить файл лога из официального кэша GitHub
+      # Исправлено: restore-keys теперь ищет по префиксу последний измененный кэш
+      - name: Restore log from cache
+        uses: actions/cache/restore@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: ${{ github.workflow }} # имя файла этого workflow
-          name: deployment-log       # Имя скачиваемого артефакта
-          path: .                    # Скачиваем в текущую папку
- 
+          path: log.txt
+          key: deployment-history-log-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            deployment-history-log-
  
       - name: show summary
         run: |
@@ -69,13 +66,22 @@ jobs:
           echo "14 августа 2026 года" >> $GITHUB_STEP_SUMMARY
           echo "Время запуска (MSK): **$CURRENT_TIME**" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "Запуск выполнен в: $CURRENT_TIME" >> log.txt
           
-      # Загрузка файла log.txt в качестве артефакта GitHub Actions
+          # Запись выполненного окружения и времени в конец файла
+          echo "Запуск на окружении ${{ github.event.inputs.environment }} выполнен в: $CURRENT_TIME" >> log.txt
+
+      # 2. Перезаписываем обновленный файл лога в кэш для следующих запусков
+      - name: Save updated log to cache
+        uses: actions/cache/save@v4
+        if: always() # Сохраняем кэш даже если предыдущие шаги упали
+        with:
+          path: log.txt
+          key: deployment-history-log-${{ github.run_id }}-${{ github.run_attempt }}
+
+      # 3. Дополнительно прикрепляем файл как артефакт, чтобы его можно было скачать руками со страницы запуска
       - name: Upload artifact log
         uses: actions/upload-artifact@v4
         with:
-          name: deployment-log  # Имя скачиваемого архива на GitHub
-          path: log.txt         # Путь к файлу, который мы сохраняем
+          name: deployment-log
+          path: log.txt
           overwrite: true
-
