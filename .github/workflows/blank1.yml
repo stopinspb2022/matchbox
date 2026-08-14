@@ -43,4 +43,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           echo второй скрипт
-
+      - name: show summary
+        run: |
+          echo "скрипт удачно запущен!" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
